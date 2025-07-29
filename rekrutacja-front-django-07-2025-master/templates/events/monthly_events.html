@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="py-5">
+  <div class="container">
+    <h1 class="mb-4 fw-bold text-center" style="color:#003d7c;">📅 Kalendarz wydarzeń</h1>
+    
+    <div id="calendar" class="mb-5"></div>
+
+    <div class="p-4 rounded shadow-sm" style="background: #f8f9fa;">
+      <h4 class="fw-bold mb-3" style="color:#003d7c;">📜 Wydarzenia w tym miesiącu</h4>
+      <ul id="event-list" class="list-group">
+        <li class="list-group-item text-muted">Brak wydarzeń w tym miesiącu.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var calendarEl = document.getElementById('calendar');
+  var eventListEl = document.getElementById('event-list');
+
+  var calendar = new FullCalendar.Calendar(calendarEl, {
+    initialView: 'dayGridMonth',
+    locale: 'pl',
+    height: 'auto',
+    headerToolbar: {
+      left: 'prev,next today',
+      center: 'title',
+      right: 'dayGridMonth,listMonth'
+    },
+    events: "{% url 'events_json' %}",
+    eventDidMount: function(info) {
+      new bootstrap.Tooltip(info.el, {
+        title: info.event.title + " – " + (info.event.extendedProps.description || "Brak opisu"),
+        placement: "top",
+        trigger: "hover",
+        container: 'body'
+      });
+    },
+    eventClick: function(info) {
+      info.jsEvent.preventDefault();
+      if (info.event.url) {
+        window.location.href = info.event.url;
+      }
+    },
+    datesSet: function(info) {
+      fetch("{% url 'events_json' %}")
+        .then(response => response.json())
+        .then(data => {
+          eventListEl.innerHTML = "";
+
+          let start = new Date(info.start);
+          let end = new Date(info.end);
+
+          let filtered = data.filter(event => {
+            let evDate = new Date(event.start);
+            return evDate >= start && evDate < end;
+          });
+
+          if (filtered.length === 0) {
+            eventListEl.innerHTML = '<li class="list-group-item text-muted">Brak wydarzeń w tym miesiącu.</li>';
+            return;
+          }
+
+          filtered.sort((a, b) => new Date(a.start) - new Date(b.start));
+
+          filtered.forEach(event => {
+            let startDate = new Date(event.start);
+            let dateLabel = startDate.toLocaleDateString('pl-PL', { day: '2-digit', month: '2-digit' });
+
+            let li = document.createElement("li");
+            li.className = "list-group-item d-flex justify-content-between align-items-center";
+            li.innerHTML = `<div>
+                              <span class="badge bg-primary me-2">${dateLabel}</span>
+                              <strong>${event.title}</strong>
+                            </div>
+                            <a href="${event.url}" class="btn btn-sm btn-outline-primary">Szczegóły</a>`;
+            eventListEl.appendChild(li);
+          });
+        });
+    }
+  });
+
+  calendar.render();
+});
+</script>
+{% endblock %}

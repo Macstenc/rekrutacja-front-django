@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <div class="p-4 mb-4 text-white rounded" style="background-color: {{ event.color }};">
+            <h1 class="display-5 fw-bold">{{ event.name }}</h1>
+            <p class="mb-0">
+                <strong>📅 {{ event.start_date|date:"d.m.Y H:i" }} – {{ event.end_date|date:"d.m.Y H:i" }}</strong>
+            </p>
+        </div>
+
+        <div class="mb-4">
+            <h2 class="h4" style="color:#003d7c;">Opis wydarzenia</h2>
+            <p>{{ event.description }}</p>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <h3 class="h5">📍 Lokalizacja</h3>
+                <p>{{ event.location }}</p>
+            </div>
+            {% if event.mode %}
+            <div class="col-md-6">
+                <h3 class="h5">🎯 Tryb wydarzenia</h3>
+                <p>{{ event.get_mode_display }}</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="mt-3">
+            <h3 class="h5">👤 Organizator</h3>
+            <p>{{ event.organizer }}</p>
+        </div>
+
+        <div class="mt-4">
+            <a href="{% url 'index' %}" class="btn btn-secondary" aria-label="Powrót na stronę główną">⬅ Powrót</a>
+            <a href="{% url 'event_update' event.pk %}" class="btn btn-primary" aria-label="Edytuj wydarzenie">✏️
+                Edytuj</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load form_tags %}
+
+{% block title %}
+    {% if view.action == "create" %}
+        {% trans "Dodaj wydarzenie" %}
+    {% else %}
+        {% trans "Edytuj wydarzenie" %}
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <h1 class="mb-4" style="color: #003d7c;">
+            {% if view.action == "create" %}
+                {% trans "➕ Dodaj nowe wydarzenie" %}
+            {% else %}
+                {% trans "✏️ Edytuj wydarzenie" %}
+            {% endif %}
+        </h1>
+
+        {% if form.non_field_errors %}
+        <div class="alert alert-danger" role="alert">
+            {% for error in form.non_field_errors %}
+                {{ error }}
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <form method="post" novalidate>
+            {% csrf_token %}
+
+            <fieldset class="border p-3 rounded mb-4">
+                <legend class="fw-bold" style="color: #003d7c;">{% trans "Informacje podstawowe" %}</legend>
+
+                <div class="mb-3">
+                    <label for="{{ form.name.id_for_label }}" class="form-label">{% trans "Nazwa wydarzenia" %} *</label>
+                    {{ form.name }}
+                    {% for error in form.name.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="mb-3">
+                    <label for="{{ form.description.id_for_label }}" class="form-label">{% trans "Opis" %} *</label>
+                    {{ form.description }}
+                    {% for error in form.description.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </fieldset>
+
+            <fieldset class="border p-3 rounded mb-4">
+                <legend class="fw-bold" style="color: #003d7c;">{% trans "Szczegóły wydarzenia" %}</legend>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.start_date.id_for_label }}" class="form-label">{% trans "Data rozpoczęcia" %} *</label>
+                        {{ form.start_date }}
+                        {% for error in form.start_date.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.end_date.id_for_label }}" class="form-label">{% trans "Data zakończenia" %} *</label>
+                        {{ form.end_date }}
+                        {% for error in form.end_date.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="{{ form.location.id_for_label }}" class="form-label">{% trans "Lokalizacja" %} *</label>
+                    {{ form.location }}
+                    {% for error in form.location.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="mb-3">
+                    <label for="{{ form.mode.id_for_label }}" class="form-label">{% trans "Tryb wydarzenia" %}</label>
+                    {{ form.mode }}
+                    {% for error in form.mode.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </fieldset>
+
+            <fieldset class="border p-3 rounded mb-4">
+                <legend class="fw-bold" style="color: #003d7c;">{% trans "Organizacja i ustawienia" %}</legend>
+
+                <div class="mb-3">
+                    <label for="{{ form.organizer.id_for_label }}" class="form-label">{% trans "Organizator" %} *</label>
+                    {{ form.organizer }}
+                    {% for error in form.organizer.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="mb-3">
+                    <label for="{{ form.capacity.id_for_label }}" class="form-label">{% trans "Maksymalna liczba uczestników" %} *</label>
+                    {{ form.capacity }}
+                    {% for error in form.capacity.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="mb-3">
+                    <label for="{{ form.color.id_for_label }}" class="form-label">{% trans "Kolor w kalendarzu" %}</label>
+                    {{ form.color }}
+                    {% for error in form.color.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </fieldset>
+
+            <div class="d-flex justify-content-between">
+                <a href="{% url 'index' %}" class="btn btn-secondary">{% trans "⬅ Powrót" %}</a>
+                <button type="submit" class="btn btn-primary">{% trans "💾 Zapisz wydarzenie" %}</button>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}
